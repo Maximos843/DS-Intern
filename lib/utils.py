@@ -3,7 +3,10 @@ import json
 import numpy as np
 
 
-def get_data():
+def get_data() -> dict:
+    '''
+    Getting data on the population of Russian cities with opendatasets.
+    '''
     tmp1 = 'https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/geonames-all-cities-with-a-population-500/records?select=population%2C%20alternate_names&where=population%20%3E%2060000&limit=100&refine=country%3A%22Russia%22'
     res1 = requests.get(tmp1)
     dct = json.loads(res1.content)['results']
@@ -20,6 +23,9 @@ def get_data():
 
 
 def get_city_population(dct: dict, city: str) -> float:
+    '''
+    Determining the size of a settlement.
+    '''
     for i in dct:
         if i['alternate_names'] is not None and city in i['alternate_names']:
             return i['population']
@@ -27,6 +33,9 @@ def get_city_population(dct: dict, city: str) -> float:
 
 
 def splitting_by_popularity(row: np.array) -> int:
+    '''
+    Division into groups by population.
+    '''
     if row.population <= 100000:
         return 0
     elif row.population > 100000 and row.population <= 500000:

@@ -11,7 +11,10 @@ from config import Variables
 
 
 def add_base_features(df: pd.DataFrame, features: pd.DataFrame) -> pd.DataFrame:
-    ''''''
+    '''
+    Adding features from the features file to the dataset as an average of the indicators
+    of the 5 nearest objects on the map.
+    '''
     top5_nearest = []
     ind = 0
     for elem in tqdm(df.values):
@@ -29,7 +32,9 @@ def add_base_features(df: pd.DataFrame, features: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_categories(df: pd.DataFrame) -> pd.DataFrame:
-    ''''''
+    '''
+    Extraction of additional features - city, population, type of object and district.
+    '''
     ind = 0
     dct = get_data()
     geolocator_arcgis = ArcGIS()
@@ -49,7 +54,10 @@ def add_categories(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def preprocess_cat_features(df: pd.DataFrame) -> pd.DataFrame:
-    ''''''
+    '''
+    Converting categorical variables to a numerical format.
+    Next, restore the missing values using KNNImputer.
+    '''
     df['city_category'] = df['city'].map(
         {Variables.UNIQUE_CITIES[i]: i for i in range(len(Variables.UNIQUE_CITIES))}
         )
@@ -73,7 +81,9 @@ def split_data(df: pd.DataFrame) -> tuple[pd.DataFrame]:
 
 
 def scaling_and_correlation(df: pd.DataFrame, features: pd.DataFrame, is_train: bool = True) -> pd.DataFrame:
-    ''''''
+    '''
+    Data normalization and removal of highly correlated features.
+    '''
     corr_matrix = features.drop(columns=['lat', 'lon']).corr().abs()
     upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
     feats_high_corr = ['feature_' + column for column in upper.columns if any(upper[column] > 0.9)]
